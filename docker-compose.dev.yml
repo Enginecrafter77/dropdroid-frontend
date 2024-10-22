@@ -1,0 +1,12 @@
+services:
+  dropdroid:
+    image: cr.enginecrafter77.dev/enginecrafter77/dropdroid-server:latest
+    mem_limit: 128M
+    ports:
+     - "8080:8080"
+    volumes:
+     - "dropdroid:/dropdroid"
+
+volumes:
+  dropdroid:
+    name: "dropdroid-server"
