@@ -1,3 +1,8 @@
+<script setup lang="ts">
+</script>
+
 <template>
-	<h1>This is home</h1>
+	<v-app>
+		<span>Test</span>
+	</v-app>
 </template>

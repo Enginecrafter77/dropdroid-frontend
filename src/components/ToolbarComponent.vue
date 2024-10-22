@@ -1,0 +1,52 @@
+<script setup lang="ts">
+    const tab = defineModel("tab");
+    defineProps({
+        tabs: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        search: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    });
+</script>
+
+<template>
+    <div class="w-100 d-flex flex-row justify-around align-center px-4">
+        <div class="d-flex flex-row flex-1-0 justify-start align-center ga-4 py-4">
+            <v-img aspect-ratio="1/1" :inline="true" class="page-icon" rounded="circle" src="/public/logo.png"/>
+            <span class="page-title">DropDroid</span>
+        </div>
+        <div class="flex-1-1" v-if="tabs">
+            <v-tabs
+                v-model="tab"
+                align-tabs="center"
+                >
+                <v-tab :value="1">Explore</v-tab>
+                <v-tab :value="2">Organizations</v-tab>
+            </v-tabs>
+        </div>
+        <div class="h-100 d-flex flex-row flex-1-0 justify-end align-center ga-4 py-4">
+            <v-text-field class="h-fill flex-1-0" label="Search" variant="outlined" density="comfortable" append-inner-icon="mdi-magnify" hide-details v-if="search"/>
+            <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+        </div>
+    </div>
+</template>
+
+<style>
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+    .page-icon {
+        width: 4rem;
+        height: 4rem;
+    }
+    .user-avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+</style>
