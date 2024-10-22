@@ -1,5 +1,13 @@
 <script setup lang="ts">
 	import { RouterLink, RouterView } from "vue-router";
+	import axios, { type AxiosInstance } from "axios";
+	import { provide } from "vue";
+
+	const api: AxiosInstance = axios.create({
+		baseURL: "http://fitcode.vm:8080/api/v1",
+		withCredentials: true
+	});
+	provide<AxiosInstance>("apiclient", api);
 </script>
 
 <template>
@@ -10,8 +18,7 @@
 			src="@/assets/logo.svg"
 			width="125"
 			height="125"
-		/>
-
+			/>
 		<div class="wrapper">
 			<nav>
 				<RouterLink to="/">Home</RouterLink>
@@ -19,7 +26,6 @@
 			</nav>
 		</div>
 	</header>
-
 	<RouterView />
 </template>
 
