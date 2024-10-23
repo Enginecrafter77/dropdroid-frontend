@@ -1,4 +1,7 @@
 <script setup lang="ts">
+    import { useRouter } from 'vue-router';
+    const router = useRouter();
+
     const tab = defineModel("tab");
     defineProps({
         tabs: {
@@ -12,6 +15,12 @@
             default: false
         }
     });
+
+    function logout()
+    {
+        console.log("LOGOUT");
+        router.push("/login");
+    }
 </script>
 
 <template>
@@ -31,7 +40,27 @@
         </div>
         <div class="h-100 d-flex flex-row flex-1-0 justify-end align-center ga-4 py-4">
             <v-text-field class="h-fill flex-1-0" label="Search" variant="outlined" density="comfortable" append-inner-icon="mdi-magnify" hide-details v-if="search"/>
-            <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+            <v-menu>
+                <template v-slot:activator="{ props }">
+                    <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" v-bind="props" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+                </template>
+                <v-list>
+                    <v-list-item
+                        prepend-icon="mdi-account"
+                        to="/profile"
+                        link
+                        >
+                        <v-list-item-title>My Profile</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item
+                        prepend-icon="mdi-logout"
+                        link
+                        @click="logout"
+                        >
+                        <v-list-item-title>Logout</v-list-item-title>
+                    </v-list-item>
+                </v-list>
+            </v-menu>
         </div>
     </div>
 </template>
