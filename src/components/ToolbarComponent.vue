@@ -42,7 +42,9 @@
             <v-text-field class="h-fill flex-1-0" label="Search" variant="outlined" density="comfortable" append-inner-icon="mdi-magnify" hide-details v-if="search"/>
             <v-menu>
                 <template v-slot:activator="{ props }">
-                    <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" v-bind="props" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+                    <v-btn icon variant="tonal">
+                        <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" v-bind="props" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+                    </v-btn>
                 </template>
                 <v-list>
                     <v-list-item
