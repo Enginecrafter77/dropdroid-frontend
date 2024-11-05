@@ -97,9 +97,12 @@ import moment from 'moment';
                     class="app-icon"
                     :src="application.icon_url"
                     :inline="true" />
-                <div class="d-flex flex-column align-start justify-space-around ga-4">
+                <div class="d-flex flex-column align-start justify-center">
                     <span class="app-title">{{ application.name }}</span>
                     <span class="app-namespace">{{ application.namespace }}</span>
+                    <span class="app-publisher text-primary cursor-pointer">
+                        {{ application.organization.name }}
+                    </span>
                 </div>
             </div>
             <div class="d-flex flex-column align-center justify-space-around ga-4">
@@ -166,6 +169,9 @@ import moment from 'moment';
     }
     .app-namespace {
         font-weight: lighter;
+    }
+    .app-publisher {
+        font-weight: normal;
     }
     .comment-box {
         background-color: #F5F5F5;
