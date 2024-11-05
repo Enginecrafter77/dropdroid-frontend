@@ -9,6 +9,12 @@ const router = createRouter({
 			component: () => import("../views/DashboardView.vue")
 		},
 		{
+			path: "/applications/:applicationId",
+			name: "application",
+			props: true,
+			component: () => import("../views/ApplicationView.vue")
+		},
+		{
 			path: "/about",
 			name: "about",
 			// route level code-splitting

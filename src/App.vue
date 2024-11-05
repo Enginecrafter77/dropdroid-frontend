@@ -4,10 +4,15 @@
 	import { provide } from "vue";
 
 	const api: AxiosInstance = axios.create({
-		baseURL: "http://fitcode.vm:8080/api/v1",
-		withCredentials: true
+		baseURL: import.meta.env.VITE_BACKEND_URL + "/api/v2",
+		auth: {
+			username: import.meta.env.VITE_BACKEND_USERNAME,
+			password: import.meta.env.VITE_BACKEND_PASSWORD
+		}
 	});
-	provide<AxiosInstance>("apiclient", api);
+	provide<AxiosInstance>("api", api);
+
+	console.log(import.meta.env.VITE_BACKEND_URL);
 </script>
 
 <template>
