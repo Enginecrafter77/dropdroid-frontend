@@ -1,8 +1,9 @@
 <script setup lang="ts">
+    import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-import { type AxiosInstance } from 'axios';
-import moment from 'moment';
-    import { inject, reactive, ref, shallowRef, toRef, watch, type Ref } from 'vue';
+    import { type AxiosInstance } from 'axios';
+    import moment from 'moment';
+    import { inject, reactive, ref, toRef, watch, type Ref } from 'vue';
 
     const apiClient = inject<AxiosInstance>("api");
 
@@ -24,7 +25,7 @@ import moment from 'moment';
             name: ""
         }
     });
-    const comments = shallowRef();
+    const comments = ref();
     const newCommentContent = ref();
     const submittingComment = ref<boolean>(false);
 
@@ -138,21 +139,15 @@ import moment from 'moment';
                     />
             </div>
             <div class="d-flex flex-column align-stretch justify-start ga-2 mt-4">
-                <div
-                    class="comment-box d-flex flex-row justify-start align-center ga-4"
+                <ApplicationComment
                     v-for="comment of comments"
                     :key="comment.id"
-                    >
-                    <div class="d-flex flex-column align-center justify-center ga-2">
-                        <v-avatar
-                            rounded="circle"
-                            :image="comment.user.avatar_url"
-                            size="64"
-                            />
-                        <span class="comment-author-name">{{ comment.user.display_name }}</span>
-                    </div>
-                    <span>{{ comment.content }}</span>
-                </div>
+                    :comment-id="comment.id"
+                    :author-avatar="comment.user.avatar_url"
+                    :author-name="comment.user.display_name"
+                    v-model:content="comment.content"
+                    @deleted="loadComments"
+                    />
             </div>
         </div>
     </v-container>
@@ -172,13 +167,5 @@ import moment from 'moment';
     }
     .app-publisher {
         font-weight: normal;
-    }
-    .comment-box {
-        background-color: #F5F5F5;
-        border-radius: 0.5rem;
-        padding: 1rem;
-    }
-    .comment-author-name {
-        font-size: 0.75rem;
     }
 </style>
