@@ -1,28 +1,30 @@
 <script setup lang="ts">
-    import { reactive, ref } from 'vue';
+    import { inject, onMounted, ref, shallowRef } from 'vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
     import ExploreApplications from '@/components/ExploreApplications.vue';
+    import { type AxiosInstance } from 'axios';
 
+    const apiClient = inject<AxiosInstance|undefined>("api");
     const tab = ref();
 
-    const apps = reactive<Array<{name: string, organizationName: string, icon: string}>>([]);
-    for(let index = 0; index < 7; ++index)
+    const apps = shallowRef<Array<{id: number, name: string, organizationName: string, icon: string}>>([]);
+
+    async function loadApps()
     {
-        apps.push({
-            name: "App1",
-            organizationName: "Andraci1",
-            icon: "/public/logo.png"
-        });
+        const response = await apiClient?.get("/applications?count=100");
+        apps.value = Array.from(response?.data.data.map((i: {id: number, name: string, organization: {name: string}, icon_url: string}) => {
+            return {
+                id: i.id,
+                name: i.name,
+                organizationName: i.organization.name,
+                icon: i.icon_url
+            }
+        }));
     }
 
-    function addApp()
-    {
-        apps.push({
-            name: "App1",
-            organizationName: "Andraci1",
-            icon: "/public/logo.png"
-        });
-    }
+    onMounted(() => {
+        loadApps();
+    });
 </script>
 
 <template>
@@ -35,5 +37,4 @@
     <ExploreApplications
         :apps="apps"
         />
-    <v-btn @click="addApp">Add app</v-btn>
 </template>

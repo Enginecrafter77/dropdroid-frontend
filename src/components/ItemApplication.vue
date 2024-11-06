@@ -1,5 +1,8 @@
 <script setup lang="ts">
     defineProps({
+        appId: {
+            type: Number
+        },
         name: {
             type: String
         },
