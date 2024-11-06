@@ -1,29 +1,19 @@
 <script setup lang="ts">
-    import { inject, onMounted, ref, shallowRef } from 'vue';
+    import { computed, ref } from 'vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
     import ExploreApplications from '@/components/ExploreApplications.vue';
-    import { type AxiosInstance } from 'axios';
+    import ExploreOrganizations from '@/components/ExploreOrganizations.vue';
 
-    const apiClient = inject<AxiosInstance|undefined>("api");
     const tab = ref();
-
-    const apps = shallowRef<Array<{id: number, name: string, organizationName: string, icon: string}>>([]);
-
-    async function loadApps()
-    {
-        const response = await apiClient?.get("/applications?count=100");
-        apps.value = Array.from(response?.data.data.map((i: {id: number, name: string, organization: {name: string}, icon_url: string}) => {
-            return {
-                id: i.id,
-                name: i.name,
-                organizationName: i.organization.name,
-                icon: i.icon_url
-            }
-        }));
-    }
-
-    onMounted(() => {
-        loadApps();
+    const tabClass = computed(() => {
+        switch(tab.value)
+        {
+            case 1:
+                return ExploreApplications;
+            case 2:
+                return ExploreOrganizations;
+        }
+        return ExploreApplications;
     });
 </script>
 
@@ -34,7 +24,5 @@
         search
         />
     <span>{{ tab }}</span>
-    <ExploreApplications
-        :apps="apps"
-        />
+    <component :is="tabClass"/>
 </template>

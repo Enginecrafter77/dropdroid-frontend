@@ -1,19 +1,34 @@
 <script setup lang="ts">
     import { useRouter } from 'vue-router';
     import ItemApplication from './ItemApplication.vue';
+    import { inject, onMounted, shallowRef } from 'vue';
+    import type { AxiosInstance } from 'axios';
 
     const router = useRouter();
-    defineProps({
-        apps: {
-            type: Array<{id: number, name: string, organizationName: string, icon: string}>,
-            required: true
-        }
-    });
+    const apiClient = inject<AxiosInstance|undefined>("api");
+    const apps = shallowRef<Array<{id: number, name: string, organizationName: string, icon: string}>>([]);
 
     function redirectToApp(id: number)
     {
         router.push(`/applications/${id}`);
     }
+
+    async function loadApps()
+    {
+        const response = await apiClient?.get("/applications?count=100");
+        apps.value = Array.from(response?.data.data.map((i: {id: number, name: string, organization: {name: string}, icon_url: string}) => {
+            return {
+                id: i.id,
+                name: i.name,
+                organizationName: i.organization.name,
+                icon: i.icon_url
+            }
+        }));
+    }
+
+    onMounted(() => {
+        loadApps();
+    });
 </script>
 
 <template>
