@@ -1,11 +1,9 @@
 <script setup lang="ts">
     import { type User } from '@/types';
-    import { type AxiosInstance } from 'axios';
-    import { inject, onMounted, ref } from 'vue';
+    import { inject, type Ref } from 'vue';
     import { useRouter } from 'vue-router';
 
-    const apiClient = inject<AxiosInstance>("api");
-    const currentUser = ref<User>();
+    const currentUser = inject<Ref<User|undefined>>("currentUser");
     const router = useRouter();
 
     const tab = defineModel("tab");
@@ -33,16 +31,6 @@
         console.log("LOGOUT");
         router.push("/login");
     }
-
-    async function loadUser()
-    {
-        const response = await apiClient?.get("/me");
-        currentUser.value = response?.data;
-    }
-
-    onMounted(() => {
-        loadUser();
-    });
 </script>
 
 <template>
