@@ -18,7 +18,19 @@
 <template>
     <div class="d-flex flex-row justify-center align-center">
         <div class="d-flex flex-row justify-start align-center ga-4 pa-4 app-card">
-            <v-img aspect-ratio="1/1" class="application-icon flex-0-0" rounded="lg" :src="icon" />
+            <v-img
+                aspect-ratio="1/1"
+                class="application-icon flex-0-0"
+                rounded="lg"
+                :src="icon">
+                <template #placeholder>
+                    <v-img
+                        aspect-ratio="1/1"
+                        class="application-icon flex-0-0"
+                        rounded="lg"
+                        src="/public/logo.png"/>
+                </template>
+            </v-img>
             <div class="d-flex flex-column justify-around align-start ga-2 flex-1-0">
                 <span class="app-name">{{ name }}</span>
                 <span class="app-organization-name">{{ organizationName }}</span>
