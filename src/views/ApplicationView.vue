@@ -1,11 +1,13 @@
 <script setup lang="ts">
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
+    import { type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
     import { inject, reactive, ref, toRef, watch, type Ref } from 'vue';
 
     const apiClient = inject<AxiosInstance>("api");
+    const currentUser = inject<Ref<User|undefined>>("currentUser");
 
     const props = defineProps({
         applicationId: {
@@ -149,6 +151,8 @@
                     :author-avatar="comment.user.avatar_url"
                     :author-name="comment.user.display_name"
                     v-model:content="comment.content"
+                    :editable="comment.user.id == currentUser?.id"
+                    :deletable="comment.user.id == currentUser?.id"
                     @deleted="loadComments"
                     />
             </div>

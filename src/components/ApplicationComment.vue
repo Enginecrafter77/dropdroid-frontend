@@ -12,6 +12,16 @@
         },
         authorName: {
             type: String
+        },
+        editable: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        deletable: {
+            type: Boolean,
+            required: false,
+            default: false
         }
     });
     const emit = defineEmits(["deleted"]);
@@ -89,24 +99,25 @@
                 color="error"
                 icon="mdi-delete"
                 :loading="deleting"
+                v-if="deletable"
                 @click="deleteComment"
                 />
             <v-btn
                 variant="text"
                 icon="mdi-pencil"
-                v-if="!editing"
+                v-if="editable && !editing"
                 @click="startEditing"
                 />
             <v-btn
                 variant="text"
                 icon="mdi-close"
-                v-if="editing"
+                v-if="editable && editing"
                 @click="stopEditing"
                 />
             <v-btn
                 variant="text"
                 icon="mdi-check"
-                v-if="editing"
+                v-if="editable && editing"
                 :loading="saving"
                 @click="submitEdit"
                 />
