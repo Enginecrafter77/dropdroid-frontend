@@ -1,5 +1,11 @@
 <script setup lang="ts">
+    import { type User } from '@/types';
+    import { type AxiosInstance } from 'axios';
+    import { inject, onMounted, ref } from 'vue';
     import { useRouter } from 'vue-router';
+
+    const apiClient = inject<AxiosInstance>("api");
+    const currentUser = ref<User>();
     const router = useRouter();
 
     const tab = defineModel("tab");
@@ -27,6 +33,16 @@
         console.log("LOGOUT");
         router.push("/login");
     }
+
+    async function loadUser()
+    {
+        const response = await apiClient?.get("/me");
+        currentUser.value = response?.data;
+    }
+
+    onMounted(() => {
+        loadUser();
+    });
 </script>
 
 <template>
@@ -49,7 +65,13 @@
             <v-menu>
                 <template v-slot:activator="{ props }">
                     <v-btn icon variant="tonal">
-                        <v-img aspect-ratio="1/1" :inline="true" class="user-avatar flex-0-0" rounded="circle" v-bind="props" src="https://blog.cdn.own3d.tv/resize=fit:crop,height:400,width:600/BoYRMteyQBOo9hgM2TO0"/>
+                        <v-img
+                            aspect-ratio="1/1"
+                            :inline="true"
+                            class="user-avatar flex-0-0"
+                            rounded="circle"
+                            v-bind="props"
+                            :src="currentUser?.avatar_url"/>
                     </v-btn>
                 </template>
                 <v-list>

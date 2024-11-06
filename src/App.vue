@@ -3,16 +3,14 @@
 	import axios, { type AxiosInstance } from "axios";
 	import { provide } from "vue";
 
-	const api: AxiosInstance = axios.create({
+	const apiClient: AxiosInstance = axios.create({
 		baseURL: import.meta.env.VITE_BACKEND_URL + "/api/v2",
 		auth: {
 			username: import.meta.env.VITE_BACKEND_USERNAME,
 			password: import.meta.env.VITE_BACKEND_PASSWORD
 		}
 	});
-	provide<AxiosInstance>("api", api);
-
-	console.log(import.meta.env.VITE_BACKEND_URL);
+	provide<AxiosInstance>("api", apiClient);
 </script>
 
 <template>
