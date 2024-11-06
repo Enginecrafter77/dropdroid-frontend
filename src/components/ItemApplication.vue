@@ -22,7 +22,8 @@
                 aspect-ratio="1/1"
                 class="application-icon flex-0-0"
                 rounded="lg"
-                :src="icon">
+                :src="icon"
+                cover >
                 <template #placeholder>
                     <v-img
                         aspect-ratio="1/1"

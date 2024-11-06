@@ -94,10 +94,13 @@
         <div class="d-flex flex-row align-center justify-space-between mt-8">
             <div class="d-flex flex-row align-center justify-start ga-8">
                 <v-img
+                    aspect-ratio="1/1"
                     rounded="circle"
                     class="app-icon"
                     :src="application.icon_url"
-                    :inline="true" />
+                    :inline="true"
+                    cover
+                    />
                 <div class="d-flex flex-column align-start justify-center">
                     <span class="app-title">{{ application.name }}</span>
                     <span class="app-namespace">{{ application.namespace }}</span>
