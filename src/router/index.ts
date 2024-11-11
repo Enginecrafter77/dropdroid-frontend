@@ -42,6 +42,18 @@ const router = createRouter({
 			name: "register",
 			component: () => import("../views/RegisterView.vue")
 		},
+		{
+			path: "/applications/:applicationId/edit",
+			name: "edit-application",
+			props: true,
+			component: () => import("../views/EditApplicationView.vue")
+		},
+		{
+			path: "/organizations/:organizationId/edit",
+			name: "edit-organization",
+			props: true,
+			component: () => import("../views/EditOrganizationView.vue")
+		},
 	]
 });
 
