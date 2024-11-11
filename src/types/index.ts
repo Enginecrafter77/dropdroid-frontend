@@ -35,3 +35,12 @@ export type PaginationResponse<T> = {
     to: number,
     data: T[]
 };
+
+export type Application = {
+    id: number,
+    name: string,
+    namespace: string,
+    description: string|null,
+    icon_url: string,
+    organization: Organization
+};

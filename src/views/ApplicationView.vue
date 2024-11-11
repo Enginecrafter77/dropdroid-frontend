@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import { type User } from '@/types';
+    import { type Application, type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
     import { inject, reactive, ref, toRef, watch, type Ref } from 'vue';
@@ -15,7 +15,7 @@
         }
     });
     const applicationId: Ref<number|undefined> = toRef(props.applicationId);
-    const application = reactive({
+    const application = reactive<Application>({
         id: 0,
         name: "",
         namespace: "",
@@ -24,7 +24,9 @@
         organization: {
             id: 0,
             slug: "",
-            name: ""
+            name: "",
+            description: "",
+            icon_url: ""
         }
     });
     const comments = ref();
