@@ -17,17 +17,13 @@
         <v-text-field class="w-33" color="primary" label="Application ID"></v-text-field>
         <v-text-field class="w-33" color="primary" label="Display name"></v-text-field>
         <v-text-field class="w-33" color="primary" label="Description"></v-text-field>
-        <div class="d-flex justify-space-between align-end mx-5">
-            <div class="justify-space-around">
-                <v-btn variant="outlined" to="/add-organization" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
-                    Cancel
-                </v-btn>
-            </div>
-            <div class="justify-space-around">
-                <v-btn to="/" class="w-100 mx-8" rounded="lg" elevation="8" color="primary">
-                    Save
-                </v-btn>
-            </div>
+        <div class="d-flex flex-row justify-space-around align-end mx-5">
+            <v-btn variant="outlined" to="/add-organization" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
+                Cancel
+            </v-btn>
+            <v-btn to="/" class="w-100 mx-8" rounded="lg" elevation="8" color="primary">
+                Save
+            </v-btn>
         </div>
     </div>
 </template>
