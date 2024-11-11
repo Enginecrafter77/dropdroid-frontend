@@ -6,7 +6,7 @@
 </script>
 
 <template>
-    <div class="addApplication d-flex flex-column justify-center align-center">
+    <div class="add-application d-flex flex-column justify-center align-center">
         <ToolbarComponent/>
         <h2 class="mb-4">Add Application</h2>
         <v-sheet class="opacity-20" height="12rem" width="12rem" rounded="rounded" color="primary">
@@ -18,12 +18,12 @@
         <v-text-field class="w-33" color="primary" label="Display name"></v-text-field>
         <v-text-field class="w-33" color="primary" label="Description"></v-text-field>
         <div class="d-flex justify-space-between align-end mx-5">
-            <div class="gx-4">
+            <div class="justify-space-around">
                 <v-btn variant="outlined" to="/add-organization" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
                     Cancel
                 </v-btn>
             </div>
-            <div class="gx-4">
+            <div class="justify-space-around">
                 <v-btn to="/" class="w-100 mx-8" rounded="lg" elevation="8" color="primary">
                     Save
                 </v-btn>
