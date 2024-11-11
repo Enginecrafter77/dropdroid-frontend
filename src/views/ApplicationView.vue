@@ -4,7 +4,7 @@
     import { type Application, type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
-    import { inject, reactive, ref, toRef, watch, type Ref } from 'vue';
+    import { computed, inject, reactive, ref, toRef, watch, type Ref } from 'vue';
 
     const apiClient = inject<AxiosInstance>("api");
     const currentUser = inject<Ref<User|undefined>>("currentUser");
@@ -32,6 +32,8 @@
     const comments = ref();
     const newCommentContent = ref();
     const submittingComment = ref<boolean>(false);
+
+    const appEditLink = computed(() => `/applications/${applicationId.value}/edit`);
 
     async function loadApplication(appId: number)
     {
@@ -106,7 +108,14 @@
                     cover
                     />
                 <div class="d-flex flex-column align-start justify-center">
-                    <span class="app-title">{{ application.name }}</span>
+                    <div class="d-flex flex-row justify-start align-center ga-2">
+                        <span class="app-title">{{ application.name }}</span>
+                        <v-btn
+                            variant="plain"
+                            icon="mdi-pencil"
+                            :to="appEditLink"
+                            />
+                    </div>
                     <span class="app-namespace">{{ application.namespace }}</span>
                     <span class="app-publisher text-primary cursor-pointer">
                         {{ application.organization.name }}
