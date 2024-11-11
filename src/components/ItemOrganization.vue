@@ -29,7 +29,7 @@
                         aspect-ratio="1/1"
                         class="organization-icon flex-0-0"
                         rounded="lg"
-                        src="/public/logo.png"/>
+                        src="/logo.png"/>
                 </template>
             </v-img>
             <div class="d-flex flex-column justify-around align-start ga-2 flex-1-0">

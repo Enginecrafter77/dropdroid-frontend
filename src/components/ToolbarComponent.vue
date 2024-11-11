@@ -36,7 +36,7 @@
 <template>
     <div class="w-100 d-flex flex-row justify-around align-center px-4">
         <div class="d-flex flex-row flex-1-0 justify-start align-center ga-4 py-4 cursor-pointer" @click="toDashboard">
-            <v-img aspect-ratio="1/1" :inline="true" class="page-icon" rounded="circle" src="/public/logo.png"/>
+            <v-img aspect-ratio="1/1" :inline="true" class="page-icon" rounded="circle" src="/logo.png"/>
             <span class="page-title">DropDroid</span>
         </div>
         <div class="flex-1-1" v-if="tabs">
