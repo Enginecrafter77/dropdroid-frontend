@@ -19,7 +19,7 @@
         <v-text-field class="w-33" color="primary" label="Description"></v-text-field>
         <div class="d-flex justify-space-between align-end mx-5">
             <div class="gx-4">
-                <v-btn variant="outlined" to="/" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
+                <v-btn variant="outlined" to="/add-application" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
                     Cancel
                 </v-btn>
             </div>
