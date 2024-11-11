@@ -1,8 +1,10 @@
 services:
   dropdroid:
-    image: cr.enginecrafter77.dev/enginecrafter77/dropdroid-server:latest
-    command: /app/dropdroid -Dquarkus.http.host=0.0.0.0 -Dquarkus.http.cors=true -Dquarkus.http.cors.origins=* -Dquarkus.http.cors.access-control-allow-credentials=true
+    container_name: dropdroid
+    image: cr.enginecrafter77.dev/enginecrafter77/dropdroid-server:2.0.x
     mem_limit: 128M
+    environment:
+      QUARKUS_HTTP_CORS_ORIGINS: '*'
     ports:
      - "8080:8080"
     volumes:
