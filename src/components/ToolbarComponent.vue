@@ -1,9 +1,10 @@
 <script setup lang="ts">
-    import { type User } from '@/types';
-    import { inject, type Ref } from 'vue';
+    import { User, type UserInterface } from '@/types';
+    import { computed, inject } from 'vue';
     import { useRouter } from 'vue-router';
 
-    const currentUser = inject<Ref<User|undefined>>("currentUser");
+    const userInterface = inject<UserInterface>("userInterface");
+    const currentUser = computed<User|undefined>(() => userInterface?.user.value);
     const router = useRouter();
 
     const tab = defineModel("tab");
@@ -26,9 +27,9 @@
         router.push("/");
     }
 
-    function logout()
+    async function logout()
     {
-        console.log("LOGOUT");
+        await userInterface?.logout();
         router.push("/login");
     }
 </script>
