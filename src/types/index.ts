@@ -1,3 +1,5 @@
+import type { Ref } from "vue";
+
 export enum ServerRole {
     USER = "user",
     ADMIN = "admin"
@@ -6,6 +8,10 @@ export enum ServerRole {
 export enum OrganizationRole {
     MEMBER = "member",
     ADMIN = "admin"
+};
+
+export class LoginResponse {
+    token: string = ""
 };
 
 export class User {
@@ -66,4 +72,11 @@ export class PaginationResponse<T> {
     from: number = 0;
     to: number = 0;
     data: T[] = []
+};
+
+export interface UserInterface {
+    user: Ref<User|undefined>;
+    logout: () => Promise<void>;
+    login: (username: string, password: string) => Promise<void>;
+    fetchUser: () => Promise<void>;
 };
