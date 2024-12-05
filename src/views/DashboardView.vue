@@ -23,6 +23,5 @@
         tabs
         search
         />
-    <span>{{ tab }}</span>
     <component :is="tabClass"/>
 </template>

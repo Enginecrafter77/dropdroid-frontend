@@ -1,12 +1,13 @@
 <script setup lang="ts">
-    import { inject, onMounted, shallowRef } from 'vue';
+    import { inject, onMounted, ref } from 'vue';
     import ItemOrganization from './ItemOrganization.vue';
     import { type AxiosInstance } from 'axios';
     import { useRouter } from 'vue-router';
+    import { Organization, PaginationResponse } from '@/types';
 
     const router = useRouter();
     const apiClient = inject<AxiosInstance|undefined>("api");
-    const organizations = shallowRef<Array<{id: number, slug: string, name: string, icon: string}>>([]);
+    const organizations = ref<Organization[]>();
 
     function redirectToOrganization(id: number)
     {
@@ -15,15 +16,8 @@
 
     async function loadOrganizations()
     {
-        const response = await apiClient?.get("/organizations?count=100");
-        organizations.value = Array.from(response?.data.data.map((i: {id: number, slug: string, name: string, icon_url: string}) => {
-            return {
-                id: i.id,
-                slug: i.slug,
-                name: i.name,
-                icon: i.icon_url
-            };
-        }));
+        const response = await apiClient?.get<PaginationResponse<Organization>>("/organizations?count=100");
+        organizations.value = response?.data.data;
     }
 
     onMounted(() => {
@@ -32,18 +26,21 @@
 </script>
 
 <template>
-    <v-row>
-        <v-col
-            v-for="org of organizations"
-            :key="org.id"
-            >
-            <ItemOrganization
-                :organization-id="org.id"
-                :slug="org.slug"
-                :name="org.name"
-                :icon="org.icon"
-                @click="redirectToOrganization(org.id)"
-                />
-        </v-col>
-    </v-row>
+    <v-container fluid>
+        <v-row>
+            <v-col
+                cols="12"
+                sm="6"
+                md="4"
+                lg="3"
+                v-for="org of organizations"
+                :key="org.id"
+                >
+                <ItemOrganization
+                    :organization="org"
+                    @click="redirectToOrganization(org.id)"
+                    />
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
