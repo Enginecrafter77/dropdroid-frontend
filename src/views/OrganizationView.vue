@@ -3,19 +3,19 @@
     import ItemOrganization from '@/components/ItemOrganization.vue';
 import OrganizationMember from '@/components/OrganizationMember.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import type { Application, Organization, OrganizationMembership, PaginationResponse } from '@/types';
+    import { OrganizationRole, type Application, type Organization, type OrganizationMembership, type PaginationResponse, type UserInterface } from '@/types';
     import type { AxiosInstance } from 'axios';
-    import { inject, ref, watch } from 'vue';
+    import { computed, inject, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
     
     const apiClient = inject<AxiosInstance>("api");
+    const userInterface = inject<UserInterface>("userInterface");
     const router = useRouter();
     const props = defineProps({
         organizationId: {
             type: [Number, String],
             required: true
         }
-    
     });
 
     const tab = ref<string>("applications");
@@ -24,6 +24,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
     const appNamespace = ref<string>("");
     const dialogLoading = ref<boolean>(false);
     const dialogOpen = ref<boolean>(false);
+    const deleting = ref<boolean>(false);
 
     const organization = ref<Organization>({
         id: 0,
@@ -31,6 +32,17 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
         name: "",
         description: undefined,
         icon_url: ""
+    });
+
+    const canEdit = computed<boolean>(() => {
+        if(userInterface?.user.value === undefined)
+            return false;
+        const currentUserMembership = members.value.filter((m) => m.user?.id == userInterface.user.value?.id)[0];
+        if(currentUserMembership === undefined)
+            return false;
+        if(currentUserMembership.role == OrganizationRole.ADMIN)
+            return true;
+        return false;
     });
 
     async function loadData() {
@@ -72,6 +84,21 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
             appNamespace.value = "";
         }
     }
+    
+    async function deleteOrganization() {
+        if(apiClient === undefined || deleting.value)
+            return;
+        try
+        {
+            deleting.value = true;
+            await apiClient.delete(`/organizations/${props.organizationId}`);
+            router.push("/");
+        }
+        finally
+        {
+            deleting.value = false;
+        }
+    }
 
     function deleteMember(member: OrganizationMembership){
         members.value = Array.from(members.value.filter((m) => m.id != member.id));
@@ -102,11 +129,15 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
                             variant="text"
                             color="secondary"
                             icon="mdi-pencil"
+                            v-if="canEdit"
                             />
                         <v-btn
                             variant="text"
                             color="error"
                             icon="mdi-delete"
+                            :loading="deleting"
+                            @click="deleteOrganization"
+                            v-if="canEdit"
                             />
                     </div>
                     <div class="d-flex flex-row justify-start align-center">
@@ -120,6 +151,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
                         
                         rounded="lg"
                         elevation="8"
+                        v-if="canEdit"
                         @click="router.push(`/organizations/${props.organizationId}/add-membership`)"
                         >
                         Add Member
@@ -130,6 +162,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
                                 rounded="lg"
                                 elevation="8"
                                 v-bind="props"
+                                v-if="canEdit"
                                 >
                                 Add Application
                             </v-btn>
@@ -174,7 +207,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
                         <div class="d-flex flex-column align-stretch justify-center pa-2">
                             <OrganizationMember
                                 :membership="member"
-                                manageable
+                                :manageable="canEdit"
                                 @delete="deleteMember(member)"
                             />
                         </div>
