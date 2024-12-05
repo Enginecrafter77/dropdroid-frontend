@@ -1,7 +1,8 @@
 <script setup lang="ts">
     import ItemOrganization from '@/components/ItemOrganization.vue';
-import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import { type OrganizationMembership, type PaginationResponse, type User } from '@/types';
+    import ToolbarComponent from '@/components/ToolbarComponent.vue';
+    import router from '@/router';
+    import { type Organization, type OrganizationMembership, type PaginationResponse, type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import { type Ref, inject, computed, shallowRef, watch } from 'vue';
 
@@ -19,6 +20,16 @@ import ToolbarComponent from '@/components/ToolbarComponent.vue';
         if(response == null)
             return;
         memberships.value = response.data.data;
+    }
+
+    async function createOrganization() {
+        const asyncResponce = await apiClient?.post<Organization>(`/organizations`,{
+            slug:"organization_handle",
+            name:"Example Name",
+            description:"description",
+            icon_url:""
+        });
+        router.push(`/organizations/${asyncResponce?.data.id}/edit`);
     }
 
     watch(currentUser, () => {
@@ -46,7 +57,7 @@ import ToolbarComponent from '@/components/ToolbarComponent.vue';
                 <v-btn
                     color="primary"
                     prepend-icon="mdi-plus"
-                    to="/add-organization"
+                    @click="createOrganization"
                     >
                     Add Organization
                 </v-btn>
@@ -60,6 +71,7 @@ import ToolbarComponent from '@/components/ToolbarComponent.vue';
                         :icon="membership.organization.icon_url"
                         :name="membership.organization.name"
                         :slug="membership.organization.slug"
+                        @click="router.push(`/organizations/${membership.organization.id}`)"
                         />
                 </v-col>
             </v-row>

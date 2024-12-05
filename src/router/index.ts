@@ -15,6 +15,12 @@ const router = createRouter({
 			component: () => import("../views/ApplicationView.vue")
 		},
 		{
+			path: "/organizations/:organizationId",
+			name: "organization",
+			props: true,
+			component: () => import("../views/OrganizationView.vue")
+		},
+		{
 			path: "/profile",
 			name: "profile",
 			component: () => import("@/views/ProfileView.vue")
@@ -33,16 +39,6 @@ const router = createRouter({
 			component: () => import("../views/LoginView.vue")
 		},
 		{
-			path: "/add-application",
-			name: "add-application",
-			component: () => import("../views/AddApplicationView.vue")
-		},
-		{
-			path: "/add-organization",
-			name: "add-organization",
-			component: () => import("../views/AddOrganizationView.vue")
-		},
-		{
 			path: "/register",
 			name: "register",
 			component: () => import("../views/RegisterView.vue")
@@ -58,6 +54,12 @@ const router = createRouter({
 			name: "edit-organization",
 			props: true,
 			component: () => import("../views/EditOrganizationView.vue")
+		},
+		{
+			path: "/organizations/:organizationId/add-membership",
+			name: "add-organization-member",
+			props: true,
+			component: () => import("../views/AddOrganizationMember.vue")
 		},
 	]
 });

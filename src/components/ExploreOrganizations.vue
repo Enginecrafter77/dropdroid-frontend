@@ -2,13 +2,15 @@
     import { inject, onMounted, shallowRef } from 'vue';
     import ItemOrganization from './ItemOrganization.vue';
     import { type AxiosInstance } from 'axios';
+    import { useRouter } from 'vue-router';
 
+    const router = useRouter();
     const apiClient = inject<AxiosInstance|undefined>("api");
     const organizations = shallowRef<Array<{id: number, slug: string, name: string, icon: string}>>([]);
 
     function redirectToOrganization(id: number)
     {
-        console.log(`TODO redirect to org ${id}`);
+        router.push(`/organizations/${id}`);
     }
 
     async function loadOrganizations()
