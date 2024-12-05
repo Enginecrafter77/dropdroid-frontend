@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { RouterView, useRouter } from "vue-router";
-	import axios, { type AxiosInstance, type AxiosRequestHeaders, type InternalAxiosRequestConfig } from "axios";
+	import axios, { type AxiosInstance, type AxiosRequestHeaders, type AxiosRequestTransformer, type InternalAxiosRequestConfig } from "axios";
 	import { onMounted, provide, ref, type Ref } from "vue";
 	import { LoginResponse, type User, type UserInterface } from "./types";
 	import Cookies from "js-cookie";
@@ -11,14 +11,24 @@
 		const token = Cookies.get(TOKEN_COOKIE_NAME);
 		if(token !== undefined)
 			headers["Authorization"] = `Bearer ${token}`;
-		return JSON.stringify(data);
+		return data;
+	}
+
+	function axiosDefaultTransformers(): AxiosRequestTransformer[]
+	{
+		const defaultTransformers = axios.defaults.transformRequest;
+		if(defaultTransformers === undefined)
+			return [];
+		if(defaultTransformers.constructor === Array)
+			return defaultTransformers as AxiosRequestTransformer[];
+		return [defaultTransformers as AxiosRequestTransformer];
 	}
 
 	const router = useRouter();
 
 	const apiClient: AxiosInstance = axios.create({
 		baseURL: import.meta.env.VITE_BACKEND_URL + "/api/v2",
-		transformRequest: authorizeRequest,
+		transformRequest: [...axiosDefaultTransformers(), authorizeRequest],
 		headers: {
 			"Accept": "application/json",
 			"Content-Type": "application/json"
