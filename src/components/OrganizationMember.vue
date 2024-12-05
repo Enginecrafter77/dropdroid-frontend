@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { OrganizationMembership, OrganizationRole } from '@/types';
+    import { OrganizationMembership, OrganizationRole, type UserInterface } from '@/types';
     import { getRoleLabel } from '@/utils';
     import { createEnumSelectMapping } from '@/utils/selectors';
     import type { AxiosInstance } from 'axios';
