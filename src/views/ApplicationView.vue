@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-import router from '@/router';
-    import { type Application, type Organization, type User } from '@/types';
+    import router from '@/router';
+    import { Application, type Organization, type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
     import { computed, inject, reactive, ref, toRef, watch, type Ref } from 'vue';
@@ -16,20 +16,7 @@ import router from '@/router';
         }
     });
     const applicationId: Ref<number|undefined> = toRef(props.applicationId);
-    const application = reactive<Application>({
-        id: 0,
-        name: "",
-        namespace: "",
-        description: "",
-        icon_url: "",
-        organization: {
-            id: 0,
-            slug: "",
-            name: "",
-            description: "",
-            icon_url: ""
-        }
-    });
+    const application = reactive<Application>(new Application());
     const comments = ref();
     const newCommentContent = ref();
     const submittingComment = ref<boolean>(false);
@@ -40,16 +27,8 @@ import router from '@/router';
     {
         if(apiClient == null)
             return;
-        const response = await apiClient.get(`/applications/by_id/${appId}`);
-        console.log(response);
-        application.id = response.data.id;
-        application.name = response.data.name;
-        application.namespace = response.data.namespace;
-        application.icon_url = response.data.icon_url;
-        application.description = response.data.description;
-        application.organization.id = response.data.organization.id;
-        application.organization.slug = response.data.organization.slug;
-        application.organization.name = response.data.organization.name;
+        const response = await apiClient.get<Application>(`/applications/by_id/${appId}`);
+        Object.assign(application, response.data);
         await loadComments();
     }
 
@@ -88,7 +67,9 @@ import router from '@/router';
         }
     }
 
-    async function goToOrganization(organization:Organization) {
+    async function goToOrganization(organization: Organization|undefined) {
+        if(organization === undefined)
+            return;
         router.push(`/organizations/${organization.id}`);
     }
 
@@ -123,7 +104,7 @@ import router from '@/router';
                     </div>
                     <span class="app-namespace">{{ application.namespace }}</span>
                     <span class="app-publisher text-primary cursor-pointer" @click="goToOrganization(application.organization)">
-                        {{ application.organization.name }}
+                        {{ application.organization?.name }}
                     </span>
                 </div>
             </div>

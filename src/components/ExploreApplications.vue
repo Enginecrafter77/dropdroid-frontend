@@ -39,10 +39,7 @@
                 :key="app.id"
                 >
                 <ItemApplication
-                    :app-id="app.id"
-                    :name="app.name"
-                    :organization-name="app.organization?.name"
-                    :icon="app.icon_url"
+                    :application="app"
                     @click="redirectToApp(app.id)"
                     />
             </v-col>

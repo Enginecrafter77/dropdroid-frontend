@@ -42,6 +42,12 @@ const router = createRouter({
 			component: () => import("../views/EditApplicationView.vue")
 		},
 		{
+			path: "/applications/:applicationId/packages",
+			name: "list-application-packages",
+			props: true,
+			component: () => import("../views/PackageListView.vue")
+		},
+		{
 			path: "/organizations/:organizationId/edit",
 			name: "edit-organization",
 			props: true,

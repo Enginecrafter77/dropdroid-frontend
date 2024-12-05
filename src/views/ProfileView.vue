@@ -68,10 +68,8 @@
                     :key="membership.id"
                     >
                     <ItemOrganization
-                        :icon="membership.organization.icon_url"
-                        :name="membership.organization.name"
-                        :slug="membership.organization.slug"
-                        @click="router.push(`/organizations/${membership.organization.id}`)"
+                        :organization="membership.organization"
+                        @click="router.push(`/organizations/${membership.organization?.id}`)"
                         />
                 </v-col>
             </v-row>

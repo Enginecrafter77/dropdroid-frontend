@@ -1,16 +1,9 @@
 <script setup lang="ts">
+    import { Application } from '@/types';
+
     defineProps({
-        appId: {
-            type: Number
-        },
-        name: {
-            type: String
-        },
-        organizationName: {
-            type: String
-        },
-        icon: {
-            type: String
+        application: {
+            type: Application
         }
     });
 </script>
@@ -22,7 +15,7 @@
                 aspect-ratio="1/1"
                 class="application-icon flex-0-0"
                 rounded="lg"
-                :src="icon"
+                :src="application?.icon_url"
                 cover >
                 <template #placeholder>
                     <v-img
@@ -33,8 +26,8 @@
                 </template>
             </v-img>
             <div class="d-flex flex-column justify-around align-start ga-2 flex-1-0">
-                <span class="app-name">{{ name }}</span>
-                <span class="app-organization-name">{{ organizationName }}</span>
+                <span class="app-name">{{ application?.name }}</span>
+                <span class="app-organization-name">{{ application?.organization?.name }}</span>
             </div>
         </div>
     </div>
