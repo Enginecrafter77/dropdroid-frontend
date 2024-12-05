@@ -1,7 +1,8 @@
 <script setup lang="ts">
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import { type Application, type User } from '@/types';
+import router from '@/router';
+    import { type Application, type Organization, type User } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
     import { computed, inject, reactive, ref, toRef, watch, type Ref } from 'vue';
@@ -87,6 +88,10 @@
         }
     }
 
+    async function goToOrganization(organization:Organization) {
+        router.push(`/organizations/${organization.id}`);
+    }
+
     watch(applicationId, (value) => {
         if(value === undefined)
             return;
@@ -117,7 +122,7 @@
                             />
                     </div>
                     <span class="app-namespace">{{ application.namespace }}</span>
-                    <span class="app-publisher text-primary cursor-pointer">
+                    <span class="app-publisher text-primary cursor-pointer" @click="goToOrganization(application.organization)">
                         {{ application.organization.name }}
                     </span>
                 </div>

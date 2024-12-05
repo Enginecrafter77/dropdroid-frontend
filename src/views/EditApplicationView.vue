@@ -1,29 +1,147 @@
 <script setup lang="ts">
-    import { reactive, ref } from 'vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
+    import LoadingOverlay from '@/components/LoadingOverlay.vue';
+    import { type AxiosInstance } from 'axios';
+    import { inject, ref, watch } from 'vue';
+    import { type Application } from '@/types';
+    import { DataStatus } from '@/types/datastatus';
+    import { useRouter } from 'vue-router';
+    import { getFileMimeType } from '@/utils/mime';
+    import DataStatusStrip from '@/components/DataStatusStrip.vue';
+    import { shuffleUrl } from '@/utils';
 
-    const tab = ref();
+    const apiClient = inject<AxiosInstance>("api");
+    const router = useRouter();
+    const props = defineProps({
+        applicationId: {
+            type: [Number, String],
+            required: true
+        }
+    });
+    const application = ref<Application>({
+        id: 0,
+        name: "",
+        namespace: "",
+        description: null,
+        icon_url: "",
+        organization: undefined
+    });
+
+    const applicationIconFile = ref<File>();
+    const status = ref<DataStatus>(DataStatus.NOT_MODIFIED);
+
+    async function loadData() {
+        if (apiClient === undefined)
+            return;
+        const response = await apiClient.get<Application>(`/applications/by_id/${props.applicationId}`);
+        application.value = response.data;
+    }
+
+    async function uploadIcon() {
+        if (apiClient === undefined || applicationIconFile.value === undefined)
+            return;
+        const mime = await getFileMimeType(applicationIconFile.value);
+        await apiClient.put(`/applications/by_id/${props.applicationId}/icon`, applicationIconFile.value, {
+            headers: {
+                "Content-Type": mime
+            }
+        });
+        application.value.icon_url = shuffleUrl(application.value.icon_url);
+    }
+
+    async function saveData() {
+        if (apiClient === undefined)
+            return;
+        try
+        {
+            status.value = DataStatus.SAVING;
+            await apiClient.put(`/applications/by_id/${props.applicationId}`,application.value);
+            status.value = DataStatus.SAVED;
+        }
+        catch
+        {
+            status.value = DataStatus.ERROR;
+        }
+    }
+
+    function doneEditing()
+    {
+        router.back();
+    }
+
+    watch(()=>props.applicationId, (value: number|string)=>{
+        loadData();
+    }, {immediate: true});
 </script>
 
 <template>
-    <div class="edit-application d-flex flex-column justify-center align-center">
-        <ToolbarComponent/>
-        <h2 class="mb-4">Edit Application</h2>
-        <v-sheet class="opacity-20" height="12rem" width="12rem" rounded="rounded" color="primary">
-        </v-sheet>
-        <v-btn variant="tonal" class="w-33 mt-4 mb-8" rounded="lg" append-icon="mdi-upload" >
-            Upload file
-        </v-btn>
-        <v-text-field disabled class="w-33" color="primary" label="Application ID"></v-text-field>
-        <v-text-field class="w-33" color="primary" label="Display name"></v-text-field>
-        <v-text-field class="w-33" color="primary" label="Description"></v-text-field>
-        <div class="d-flex flex-row justify-space-around align-end mx-5">
-            <v-btn variant="outlined" to="/" class="w-50 mx-8" rounded="lg" elevation="8" color="error">
-                Cancel
-            </v-btn>
-            <v-btn to="/" class="w-100 mx-8" rounded="lg" elevation="8" color="primary">
-                Save
-            </v-btn>
-        </div>
-    </div>
+    <ToolbarComponent/>
+    <v-container max-width="800" min-width="100" class="fill-height">
+        <v-row>
+            <v-col cols="12" align="center">
+                <span class="application-title">Edit Application</span>
+            </v-col>
+            <v-col cols="12" md="6">
+                <div class="d-flex flex-column justify-normal align-stretch ga-2">
+                    <LoadingOverlay>
+                        <v-img
+                            class="w-100"
+                            aspect-ratio="1/1"
+                            :src="application.icon_url"
+                            />
+                    </LoadingOverlay>
+                    <v-file-input
+                        label="Upload icon"
+                        v-model="applicationIconFile"
+                        type ='file'
+                        @update:model-value="uploadIcon"
+                        />
+                </div>
+            </v-col>
+            <v-col cols="12" md="6">
+                <div class="d-flex flex-column justify-normal align-stretch ga-2">
+                    <v-text-field disabled
+                        color="primary"
+                        label="Application ID"
+                        v-model="application.namespace"
+                        @change="saveData"
+                        />
+                    <v-text-field
+                        color="primary"
+                        label="Display Name"
+                        v-model="application.name"
+                        @change="saveData"
+                        />
+                    <v-text-field
+                        color="primary"
+                        label="Description"
+                        v-model="application.description"
+                        @change="saveData"
+                        />
+                </div>
+            </v-col>
+            <v-col cols="12">
+                <div class="w-100 d-flex flex-column flex-sm-row justify-normal justify-sm-end align-center ga-2">
+                    <DataStatusStrip :status="status" />
+                    <v-btn
+                        rounded="lg"
+                        color="primary"
+                        @click="doneEditing" 
+                        >
+                        Done
+                    </v-btn>
+                </div>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
+
+<style>
+    .application-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }.application-subtitle {
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+</style>
