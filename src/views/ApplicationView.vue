@@ -112,7 +112,10 @@
                 <v-btn color="primary">
                     Install
                 </v-btn>
-                <v-btn variant="text">
+                <v-btn
+                    variant="text"
+                    :to="`/applications/${applicationId}/packages`"
+                    >
                     Packages
                 </v-btn>
             </div>

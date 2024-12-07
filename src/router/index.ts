@@ -59,6 +59,12 @@ const router = createRouter({
 			props: true,
 			component: () => import("../views/AddOrganizationMember.vue")
 		},
+		{
+			path: "/packages/:packageId/edit",
+			name: "edit-package",
+			props: true,
+			component: () => import("../views/EditPackageView.vue")
+		}
 	]
 });
 
