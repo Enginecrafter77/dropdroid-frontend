@@ -1,16 +1,8 @@
 <script setup lang="ts">
+    import { Organization } from '@/types';
     defineProps({
-        organizationId: {
-            type: Number
-        },
-        slug: {
-            type: String
-        },
-        name: {
-            type: String
-        },
-        icon: {
-            type: String
+        organization: {
+            type: Organization
         }
     });
 </script>
@@ -22,7 +14,7 @@
                 aspect-ratio="1/1"
                 class="organization-icon flex-0-0"
                 rounded="lg"
-                :src="icon"
+                :src="organization?.icon_url"
                 cover >
                 <template #placeholder>
                     <v-img
@@ -33,8 +25,8 @@
                 </template>
             </v-img>
             <div class="d-flex flex-column justify-around align-start ga-2 flex-1-0">
-                <span class="organization-name">{{ name }}</span>
-                <span class="organization-slug">{{ slug }}</span>
+                <span class="organization-name">{{ organization?.name }}</span>
+                <span class="organization-slug">{{ organization?.slug }}</span>
             </div>
         </div>
     </div>

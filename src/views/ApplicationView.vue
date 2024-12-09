@@ -1,11 +1,11 @@
 <script setup lang="ts">
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-import router from '@/router';
-    import { type Application, type Organization, type User } from '@/types';
+    import router from '@/router';
+    import { Application, OrganizationMembership, OrganizationRole, type Organization, type User, type Comment, PaginationResponse } from '@/types';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
-    import { computed, inject, reactive, ref, toRef, watch, type Ref } from 'vue';
+    import { computed, inject, ref, toRef, watch, type Ref } from 'vue';
 
     const apiClient = inject<AxiosInstance>("api");
     const currentUser = inject<Ref<User|undefined>>("currentUser");
@@ -16,50 +16,28 @@ import router from '@/router';
         }
     });
     const applicationId: Ref<number|undefined> = toRef(props.applicationId);
-    const application = reactive<Application>({
-        id: 0,
-        name: "",
-        namespace: "",
-        description: "",
-        icon_url: "",
-        organization: {
-            id: 0,
-            slug: "",
-            name: "",
-            description: "",
-            icon_url: ""
-        }
-    });
-    const comments = ref();
-    const newCommentContent = ref();
+    const application = ref<Application>();
+    const currentUserMembership = ref<OrganizationMembership>();
+    const comments = ref<Comment[]>([]);
+    const newCommentContent = ref<string>();
     const submittingComment = ref<boolean>(false);
-
-    const appEditLink = computed(() => `/applications/${applicationId.value}/edit`);
+    const deletingApplication = ref<boolean>(false);
+    const canEdit = computed<boolean>(() => {
+        if(currentUserMembership.value === undefined)
+            return false;
+        return currentUserMembership.value.role == OrganizationRole.ADMIN;
+    });
 
     async function loadApplication(appId: number)
     {
         if(apiClient == null)
             return;
-        const response = await apiClient.get(`/applications/by_id/${appId}`);
-        console.log(response);
-        application.id = response.data.id;
-        application.name = response.data.name;
-        application.namespace = response.data.namespace;
-        application.icon_url = response.data.icon_url;
-        application.description = response.data.description;
-        application.organization.id = response.data.organization.id;
-        application.organization.slug = response.data.organization.slug;
-        application.organization.name = response.data.organization.name;
-        await loadComments();
-    }
+        const applicationResponse = await apiClient.get<Application>(`/applications/by_id/${appId}`);
+        const commentsResponse = await apiClient.get<PaginationResponse<Comment>>(`/applications/by_id/${appId}/comments?count=100`);
 
-    async function loadComments()
-    {
-        if(apiClient == null)
-            return;
-        const response = await apiClient.get(`/applications/by_id/${application.id}/comments?count=100`);
-        const commentList = response.data.data;
-        commentList.sort((a: {created_at: number}, b: {created_at: number}) => {
+        application.value = applicationResponse.data;
+        const commentList = commentsResponse.data.data;
+        commentList.sort((a, b) => {
             const aD = moment(a.created_at);
             const bD = moment(b.created_at);
             if(aD.isBefore(bD))
@@ -69,6 +47,21 @@ import router from '@/router';
             return 0;
         });
         comments.value = commentList;
+
+        await loadMembership(application.value, currentUser?.value);
+    }
+
+    async function loadMembership(app: Application, user: User|undefined)
+    {
+        if(app.organization === undefined || apiClient === undefined || user === undefined)
+            return;
+        const membershipResponse = await apiClient.get<PaginationResponse<OrganizationMembership>>(`/organizations/${app.organization?.id}/memberships?count=100`);
+        currentUserMembership.value = membershipResponse.data.data.filter((m) => m.user?.id == user.id)[0];
+    }
+
+    function removeComment(removed: Comment)
+    {
+        comments.value = Array.from(comments.value.filter((c) => c.id != removed.id));
     }
 
     async function submitComment()
@@ -78,8 +71,8 @@ import router from '@/router';
         try
         {
             submittingComment.value = true;
-            await apiClient.post(`/applications/by_id/${application.id}/comments`, {content: newCommentContent.value});
-            await loadComments();
+            const response = await apiClient.post(`/applications/by_id/${application.value?.id}/comments`, {content: newCommentContent.value});
+            comments.value.unshift(response.data);
         }
         finally
         {
@@ -88,8 +81,24 @@ import router from '@/router';
         }
     }
 
-    async function goToOrganization(organization:Organization) {
+    async function goToOrganization(organization: Organization|undefined) {
+        if(organization === undefined)
+            return;
         router.push(`/organizations/${organization.id}`);
+    }
+
+    async function deleteApplication()
+    {
+        try
+        {
+            deletingApplication.value = true;
+            await apiClient?.delete(`/applications/by_id/${props.applicationId}`);
+            router.push("/");
+        }
+        finally
+        {
+            deletingApplication.value = false;
+        }
     }
 
     watch(applicationId, (value) => {
@@ -108,22 +117,31 @@ import router from '@/router';
                     aspect-ratio="1/1"
                     rounded="circle"
                     class="app-icon"
-                    :src="application.icon_url"
+                    :src="application?.icon_url"
                     :inline="true"
                     cover
                     />
                 <div class="d-flex flex-column align-start justify-center">
                     <div class="d-flex flex-row justify-start align-center ga-2">
-                        <span class="app-title">{{ application.name }}</span>
+                        <span class="app-title">{{ application?.name }}</span>
                         <v-btn
-                            variant="plain"
+                            variant="text"
                             icon="mdi-pencil"
-                            :to="appEditLink"
+                            :to="`/applications/${applicationId}/edit`"
+                            v-if="canEdit"
+                            />
+                        <v-btn
+                            variant="text"
+                            color="error"
+                            icon="mdi-delete"
+                            :loading="deletingApplication"
+                            @click="deleteApplication"
+                            v-if="canEdit"
                             />
                     </div>
-                    <span class="app-namespace">{{ application.namespace }}</span>
-                    <span class="app-publisher text-primary cursor-pointer" @click="goToOrganization(application.organization)">
-                        {{ application.organization.name }}
+                    <span class="app-namespace">{{ application?.namespace }}</span>
+                    <span class="app-publisher text-primary cursor-pointer" @click="goToOrganization(application?.organization)">
+                        {{ application?.organization?.name }}
                     </span>
                 </div>
             </div>
@@ -131,7 +149,10 @@ import router from '@/router';
                 <v-btn color="primary">
                     Install
                 </v-btn>
-                <v-btn variant="text">
+                <v-btn
+                    variant="text"
+                    :to="`/applications/${applicationId}/packages`"
+                    >
                     Packages
                 </v-btn>
             </div>
@@ -139,7 +160,7 @@ import router from '@/router';
         <div class="w-full mt-4">
             <h2>Description</h2>
             <p>
-                {{ application.description }}
+                {{ application?.description }}
             </p>
         </div>
         <div class="w-full mt-4">
@@ -164,12 +185,12 @@ import router from '@/router';
                     v-for="comment of comments"
                     :key="comment.id"
                     :comment-id="comment.id"
-                    :author-avatar="comment.user.avatar_url"
-                    :author-name="comment.user.display_name"
+                    :author-avatar="comment.user?.avatar_url"
+                    :author-name="comment.user?.display_name"
                     v-model:content="comment.content"
-                    :editable="comment.user.id == currentUser?.id"
-                    :deletable="comment.user.id == currentUser?.id"
-                    @deleted="loadComments"
+                    :editable="comment.user?.id == currentUser?.id"
+                    :deletable="comment.user?.id == currentUser?.id"
+                    @deleted="removeComment(comment)"
                     />
             </div>
         </div>

@@ -7,7 +7,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
     import type { AxiosInstance } from 'axios';
     import { computed, inject, ref, watch } from 'vue';
     import { useRouter } from 'vue-router';
-    
+
     const apiClient = inject<AxiosInstance>("api");
     const userInterface = inject<UserInterface>("userInterface");
     const router = useRouter();
@@ -148,7 +148,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
             <v-col cols="12" md="3">
                 <div class="d-flex flex-row justify-space-evenly justify-md-end align-center ga-2">
                     <v-btn
-                        
+
                         rounded="lg"
                         elevation="8"
                         v-if="canEdit"
@@ -226,11 +226,8 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
                         :key="application.id"
                         >
                         <div class="d-flex flex-column align-stretch justify-center pa-4">
-                            <ItemApplication 
-                                :app-id="application.id"
-                                :name="application.name"
-                                :organization-name="application.organization?.name"
-                                :icon="application.icon_url"
+                            <ItemApplication
+                                :application="application"
                                 @click="router.push(`/applications/${application.id}`)"
                             />
                         </div>

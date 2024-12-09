@@ -1,12 +1,13 @@
 <script setup lang="ts">
     import { useRouter } from 'vue-router';
     import ItemApplication from './ItemApplication.vue';
-    import { inject, onMounted, shallowRef } from 'vue';
+    import { inject, onMounted, ref } from 'vue';
     import type { AxiosInstance } from 'axios';
+    import { Application, PaginationResponse } from '@/types';
 
     const router = useRouter();
     const apiClient = inject<AxiosInstance|undefined>("api");
-    const apps = shallowRef<Array<{id: number, name: string, organizationName: string, icon: string}>>([]);
+    const apps = ref<Application[]>();
 
     function redirectToApp(id: number)
     {
@@ -15,15 +16,10 @@
 
     async function loadApps()
     {
-        const response = await apiClient?.get("/applications?count=100");
-        apps.value = Array.from(response?.data.data.map((i: {id: number, name: string, organization: {name: string}, icon_url: string}) => {
-            return {
-                id: i.id,
-                name: i.name,
-                organizationName: i.organization.name,
-                icon: i.icon_url
-            }
-        }));
+        if(apiClient === undefined)
+            return;
+        const response = await apiClient.get<PaginationResponse<Application>>("/applications?count=100");
+        apps.value = response.data.data;
     }
 
     onMounted(() => {
@@ -32,25 +28,21 @@
 </script>
 
 <template>
-    <v-row class="app-grid">
-        <v-col
-            v-for="app in apps"
-            :key="app.id"
-            >
-            <ItemApplication
-                :app-id="app.id"
-                :name="app.name"
-                :organization-name="app.organizationName"
-                :icon="app.icon"
-                @click="redirectToApp(app.id)"
-                />
-        </v-col>
-    </v-row>
+    <v-container fluid>
+        <v-row>
+            <v-col
+                cols="12"
+                sm="6"
+                md="4"
+                lg="3"
+                v-for="app in apps"
+                :key="app.id"
+                >
+                <ItemApplication
+                    :application="app"
+                    @click="redirectToApp(app.id)"
+                    />
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
-
-<style>
-    .app-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr);
-    }
-</style>

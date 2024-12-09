@@ -29,3 +29,10 @@ export function getRoleLabel(role: OrganizationRole|string|undefined): string|un
             return undefined;
     }
 };
+
+export function downloadFile(url: string, name: string) {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    link.click();
+}

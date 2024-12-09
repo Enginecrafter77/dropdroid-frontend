@@ -26,14 +26,6 @@ const router = createRouter({
 			component: () => import("@/views/ProfileView.vue")
 		},
 		{
-			path: "/about",
-			name: "about",
-			// route level code-splitting
-			// this generates a separate chunk (About.[hash].js) for this route
-			// which is lazy-loaded when the route is visited.
-			component: () => import("../views/AboutView.vue")
-		},
-		{
 			path: "/login",
 			name: "login",
 			component: () => import("../views/LoginView.vue")
@@ -50,6 +42,12 @@ const router = createRouter({
 			component: () => import("../views/EditApplicationView.vue")
 		},
 		{
+			path: "/applications/:applicationId/packages",
+			name: "list-application-packages",
+			props: true,
+			component: () => import("../views/PackageListView.vue")
+		},
+		{
 			path: "/organizations/:organizationId/edit",
 			name: "edit-organization",
 			props: true,
@@ -61,6 +59,12 @@ const router = createRouter({
 			props: true,
 			component: () => import("../views/AddOrganizationMember.vue")
 		},
+		{
+			path: "/packages/:packageId/edit",
+			name: "edit-package",
+			props: true,
+			component: () => import("../views/EditPackageView.vue")
+		}
 	]
 });
 

@@ -39,6 +39,14 @@ export class Application {
     organization: Organization|undefined = undefined;
 };
 
+export class Comment {
+    id: number = 0;
+    content: string = "";
+    created_at: number = 0;
+    user: User|undefined = undefined;
+    application: Application|undefined = undefined;
+};
+
 export class Package {
     id: number = 0;
     label: string|null = null;
