@@ -7,7 +7,8 @@
     const currentUser = computed<User|undefined>(() => userInterface?.user.value);
     const router = useRouter();
 
-    const tab = defineModel("tab");
+    const tab = defineModel<number>("tab");
+    const searchString = defineModel<string>("searchString");
     defineProps({
         tabs: {
             type: Boolean,
@@ -50,7 +51,16 @@
             </v-tabs>
         </div>
         <div class="h-100 d-flex flex-row flex-1-0 justify-end align-center ga-4 py-4">
-            <v-text-field class="h-fill flex-1-0" label="Search" variant="outlined" density="comfortable" append-inner-icon="mdi-magnify" hide-details v-if="search"/>
+            <v-text-field
+                class="h-fill flex-1-0"
+                label="Search"
+                variant="outlined"
+                density="comfortable"
+                append-inner-icon="mdi-magnify"
+                hide-details
+                v-model="searchString"
+                v-if="search"
+                />
             <v-menu>
                 <template v-slot:activator="{ props }">
                     <v-btn icon variant="tonal">

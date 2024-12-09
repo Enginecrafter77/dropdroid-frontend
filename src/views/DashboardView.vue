@@ -4,7 +4,8 @@
     import ExploreApplications from '@/components/ExploreApplications.vue';
     import ExploreOrganizations from '@/components/ExploreOrganizations.vue';
 
-    const tab = ref();
+    const tab = ref<number>();
+    const searchString = ref<string>();
     const tabClass = computed(() => {
         switch(tab.value)
         {
@@ -20,8 +21,9 @@
 <template>
     <ToolbarComponent
         v-model:tab="tab"
+        v-model:search-string="searchString"
         tabs
         search
         />
-    <component :is="tabClass"/>
+    <component :is="tabClass" :search="searchString"/>
 </template>
