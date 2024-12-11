@@ -2,11 +2,12 @@
     import PackageTable from '@/components/PackageTable.vue';
     import PackageTableItem from '@/components/PackageTableItem.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import { Package, PaginationResponse } from '@/types';
+    import { OrganizationMembership, OrganizationRole, Package, PaginationResponse, type UserInterface } from '@/types';
     import { type AxiosInstance } from 'axios';
     import { inject, ref, watch } from 'vue';
 
     const apiClient = inject<AxiosInstance>("api");
+    const userInterface = inject<UserInterface>("userInterface");
     const props = defineProps({
         applicationId: {
             type: [Number,String],
@@ -16,6 +17,7 @@
 
     const packages = ref<Package[]>([]);
     const creatingPackage = ref<boolean>(false);
+    const manageable = ref<boolean>(false);
 
     async function loadData()
     {
@@ -23,6 +25,18 @@
             return;
         const response = await apiClient.get<PaginationResponse<Package>>(`/applications/by_id/${props.applicationId}/packages`);
         packages.value = response.data.data;
+
+        try
+        {
+            const organization = packages.value[0].application?.organization;
+            const membershipResponse = await apiClient.get<PaginationResponse<OrganizationMembership>>(`/organizations/${organization?.id}/memberships?count=100`);
+            const currentUserMembership = membershipResponse.data.data.filter((m) => m.user?.id == userInterface?.user.value?.id)[0];
+            manageable.value = currentUserMembership.role == OrganizationRole.ADMIN;
+        }
+        catch
+        {
+            manageable.value = false;
+        }
     }
 
     async function createPackage()
@@ -65,6 +79,7 @@
                         v-for="pkg of packages"
                         :key="pkg.id"
                         :package="pkg"
+                        :manageable="manageable"
                         @delete="removePackage(pkg)"
                         />
                 </PackageTable>
@@ -78,5 +93,6 @@
         icon="mdi-plus"
         :loading="creatingPackage"
         @click="createPackage"
+        v-if="manageable"
         />
 </template>

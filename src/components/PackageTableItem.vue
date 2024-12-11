@@ -9,6 +9,10 @@ import { downloadFile } from '@/utils';
         package: {
             type: Package,
             required: true
+        },
+        manageable: {
+            type: Boolean,
+            default: false
         }
     });
     const emit = defineEmits(["delete"]);
@@ -56,6 +60,7 @@ import { downloadFile } from '@/utils';
                     variant="text"
                     icon="mdi-pencil"
                     :to="`/packages/${package.id}/edit`"
+                    v-if="manageable"
                     />
                 <v-btn
                     color="error"
@@ -63,6 +68,7 @@ import { downloadFile } from '@/utils';
                     icon="mdi-delete"
                     :loading="deleting"
                     @click="deletePackage"
+                    v-if="manageable"
                     />
             </div>
         </td>
