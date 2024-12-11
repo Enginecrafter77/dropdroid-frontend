@@ -10,14 +10,17 @@ import { computed, inject, ref, watch } from 'vue';
         }
     });
 
+    const emit = defineEmits(["saved"]);
+
     const open = defineModel<boolean>();
 
     const password = ref<string>();
     const confirmPassword = ref<string>();
     const loading = ref<boolean>(false);
+    const saveingPassword = ref<boolean>(false);
     const show1 = ref<boolean>(false);
 
-    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value);
+    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "");
 
     function stopEditPassword() {
         open.value = false;
@@ -33,6 +36,7 @@ import { computed, inject, ref, watch } from 'vue';
                 password: password.value
             });
             open.value = false;
+            emit("saved");
         }
         finally
         {

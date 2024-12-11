@@ -1,12 +1,13 @@
 <script setup lang="ts">
     import DataStatusStrip from '@/components/DataStatusStrip.vue';
+import FileUploadInput from '@/components/FileUploadInput.vue';
     import ItemOrganization from '@/components/ItemOrganization.vue';
     import PasswordChangeDialog from '@/components/PasswordChangeDialog.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
     import router from '@/router';
     import { type Organization, type OrganizationMembership, type PaginationResponse, type User } from '@/types';
     import { DataStatus } from '@/types/datastatus';
-import { shuffleUrl } from '@/utils';
+    import { shuffleUrl } from '@/utils';
     import { getFileMimeType } from '@/utils/mime';
     import { type AxiosInstance } from 'axios';
     import { type Ref, inject, computed, shallowRef, watch, ref } from 'vue';
@@ -21,6 +22,7 @@ import { shuffleUrl } from '@/utils';
     const user_handle = ref<string>();
     const icon_file = ref<File>();
     const status = ref<DataStatus>(DataStatus.NOT_MODIFIED);
+    const snackBar = ref<boolean>(false);
 
     if(currentUser === undefined)
         throw new Error("currentUser not injected");
@@ -50,7 +52,7 @@ import { shuffleUrl } from '@/utils';
 
     async function createOrganization() {
         const asyncResponce = await apiClient?.post<Organization>(`/organizations`,{
-            slug:"organization_handle11",
+            slug:"organization_handle" + Math.round(Math.random()*1000),
             name:"Example Name",
             description:"description",
             icon_url:""
@@ -78,6 +80,13 @@ import { shuffleUrl } from '@/utils';
         }
     }
 
+    function reloadIcon()
+    {
+        if(currentUser?.value === undefined)
+            return;
+        currentUser.value.avatar_url = shuffleUrl(currentUser.value.avatar_url);
+    }
+
     async function uploadIcon() {
         if (apiClient === undefined || icon_file.value === undefined || currentUser?.value === undefined)
             return;
@@ -88,6 +97,10 @@ import { shuffleUrl } from '@/utils';
             }
         });
         currentUser.value.avatar_url = shuffleUrl(currentUser.value.avatar_url);
+    }
+
+    function snackBarChange() {
+        snackBar.value = true;
     }
 
     watch(currentUser, () => {
@@ -102,8 +115,11 @@ import { shuffleUrl } from '@/utils';
             <div class="profile-user-avatar">
                 <v-img
                     rounded="lg"
-                    :src="currentUser?.avatar_url"
-                    />
+                    :src="currentUser?.avatar_url">
+                    <template #placeholder>
+                        <v-img src="/logo.png"/>
+                    </template>
+                </v-img>
             </div>
             <v-scroll-y-transition hide-on-leave>
                 <div class="d-flex flex-column justify-start align-center ga-2" v-if="!editing">
@@ -118,11 +134,10 @@ import { shuffleUrl } from '@/utils';
                     <span class="profile-username text-secondary">{{ currentUser?.username }}</span>
                 </div>
                 <div class="d-flex flex-column justify-start align-stretch ga-2" v-if="editing">
-                    <v-file-input
-                        min-width="10rem"
+                    <FileUploadInput
+                        :endpoint="`/users/${currentUser?.id}/avatar`"
                         label="Upload icon"
-                        v-model="icon_file"
-                        @update:model-value="uploadIcon"
+                        @upload="reloadIcon"
                         />
                     <v-text-field
                         label="Display Name"
@@ -134,6 +149,7 @@ import { shuffleUrl } from '@/utils';
                         min-width="10rem"
                         label="Username"
                         variant="underlined"
+                        messages="Username must by unique"
                         v-model="user_handle"
                         @change="saveData"
                         />
@@ -180,13 +196,17 @@ import { shuffleUrl } from '@/utils';
     <PasswordChangeDialog
         :user-id="currentUser?.id"
         v-model="editingPassword"
+        @saved="snackBarChange"
         />
+    <v-snackbar timeout="1250" v-model="snackBar">
+        Password changed
+    </v-snackbar>
 </template>
 
 <style>
     .org-memberships-grid {
         display: grid !important;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
     .profile-column {
         background-color: #F5F3F3;
@@ -194,6 +214,9 @@ import { shuffleUrl } from '@/utils';
     .profile-user-avatar {
         aspect-ratio: 1/1;
         max-width: 16rem;
+        display: flex;
+        justify-items: stretch;
+        align-items: stretch;
     }
     .profile-display-name {
         font-size: large;

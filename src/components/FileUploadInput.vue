@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { DataStatus } from '@/types/datastatus';
+    import { getFileMimeType } from '@/utils/mime';
     import type { AxiosInstance, AxiosProgressEvent } from 'axios';
     import { computed, inject, ref, type PropType } from 'vue';
 
@@ -15,10 +16,10 @@
             type: String as PropType<"filled" | "underlined" | "outlined" | "plain" | "solo" | "solo-inverted" | "solo-filled">
         },
         mimeType: {
-            type: String,
-            default: "application/octet-stream"
+            type: String
         }
     });
+    const emit = defineEmits(["upload"]);
 
     const file = ref<File>();
     const status = ref<DataStatus>(DataStatus.NOT_MODIFIED);
@@ -64,9 +65,12 @@
         {
             status.value = DataStatus.SAVING;
             progress.value = 0;
+            let mimeType = props.mimeType;
+            if(mimeType === undefined)
+                mimeType = await getFileMimeType(file.value);
             await apiClient.put(props.endpoint, file.value, {
                 headers: {
-                    "Content-Type": props.mimeType
+                    "Content-Type": mimeType
                 },
                 onUploadProgress: (event: AxiosProgressEvent) => {
                     if(event.loaded === undefined || event.total === undefined)
@@ -74,6 +78,7 @@
                     progress.value = (event.loaded / event.total) * 100;
                 }
             });
+            emit("upload");
             status.value = DataStatus.SAVED;
             progress.value = 100;
         }

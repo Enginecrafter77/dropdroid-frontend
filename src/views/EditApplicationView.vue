@@ -9,6 +9,7 @@
     import { getFileMimeType } from '@/utils/mime';
     import DataStatusStrip from '@/components/DataStatusStrip.vue';
     import { shuffleUrl } from '@/utils';
+    import FileUploadInput from '@/components/FileUploadInput.vue';
 
     const apiClient = inject<AxiosInstance>("api");
     const router = useRouter();
@@ -37,15 +38,8 @@
         application.value = response.data;
     }
 
-    async function uploadIcon() {
-        if (apiClient === undefined || applicationIconFile.value === undefined)
-            return;
-        const mime = await getFileMimeType(applicationIconFile.value);
-        await apiClient.put(`/applications/by_id/${props.applicationId}/icon`, applicationIconFile.value, {
-            headers: {
-                "Content-Type": mime
-            }
-        });
+    function reloadIcon()
+    {
         application.value.icon_url = shuffleUrl(application.value.icon_url);
     }
 
@@ -90,11 +84,10 @@
                             :src="application.icon_url"
                             />
                     </LoadingOverlay>
-                    <v-file-input
+                    <FileUploadInput
+                        :endpoint="`/applications/by_id/${props.applicationId}/icon`"
                         label="Upload icon"
-                        v-model="applicationIconFile"
-                        type ='file'
-                        @update:model-value="uploadIcon"
+                        @upload="reloadIcon"
                         />
                 </div>
             </v-col>
