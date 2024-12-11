@@ -84,7 +84,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
             appNamespace.value = "";
         }
     }
-    
+
     async function deleteOrganization() {
         if(apiClient === undefined || deleting.value)
             return;
@@ -112,7 +112,7 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
     <v-container>
         <v-row>
             <v-col cols="12" sm="4" md="2" align="center" align-sm="end">
-                <div class="organization-icon">
+                <div class="organization-detail-icon">
                     <v-img :src="organization?.icon_url" rounded="lg">
                         <template #placeholder>
                             <v-img src="/logo.svg" />
@@ -239,8 +239,8 @@ import OrganizationMember from '@/components/OrganizationMember.vue';
 </template>
 
 <style>
-    .organization-icon {
-        max-width: 50rem;
+    .organization-detail-icon {
+        max-width: 12rem;
         aspect-ratio: 1/1;
     }
     .applications-members-grid {

@@ -25,7 +25,14 @@
             loggingIn.value = false;
         }
     }
+
+    window.addEventListener("keydown", (e) => {
+        if(e.key != "Enter")
+            return;
+        login();
+    });
 </script>
+
 <template>
     <v-container>
         <v-row>

@@ -9,7 +9,7 @@
 </script>
 
 <template>
-    <div class="d-flex flex-row justify-center align-center">
+    <div class="d-flex flex-row justify-stretch align-center">
         <div class="d-flex flex-row justify-start align-center ga-4 pa-4 app-card">
             <v-img
                 aspect-ratio="1/1"

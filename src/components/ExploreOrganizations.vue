@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { inject, onMounted, ref } from 'vue';
+    import { computed, inject, onMounted, ref } from 'vue';
     import ItemOrganization from './ItemOrganization.vue';
     import { type AxiosInstance } from 'axios';
     import { useRouter } from 'vue-router';
@@ -7,7 +7,26 @@
 
     const router = useRouter();
     const apiClient = inject<AxiosInstance|undefined>("api");
+
+    const props = defineProps({
+        search: {
+            type: String
+        }
+    });
+
     const organizations = ref<Organization[]>();
+
+    const filteredOrganizations = computed<Organization[]>(() => {
+        if(organizations.value === undefined)
+            return [];
+        let items = organizations.value;
+        if(props.search != undefined && props.search != "")
+        {
+            const query = props.search.toLocaleLowerCase();
+            items = Array.from(items.filter((o) => o.name.toLocaleLowerCase().includes(query) || o.slug.toLocaleLowerCase().includes(query)));
+        }
+        return items;
+    });
 
     function redirectToOrganization(id: number)
     {
@@ -33,7 +52,7 @@
                 sm="6"
                 md="4"
                 lg="3"
-                v-for="org of organizations"
+                v-for="org of filteredOrganizations"
                 :key="org.id"
                 >
                 <ItemOrganization
