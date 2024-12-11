@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { AxiosInstance } from 'axios';
-import { computed, inject, ref, watch } from 'vue';
+    import type { AxiosInstance } from 'axios';
+    import { computed, inject, ref, watch } from 'vue';
+    import PasswordStrengthMeter from './PasswordStrengthMeter.vue';
 
     const apiClient = inject<AxiosInstance>("api");
     const props = defineProps({
@@ -17,8 +18,7 @@ import { computed, inject, ref, watch } from 'vue';
     const password = ref<string>();
     const confirmPassword = ref<string>();
     const loading = ref<boolean>(false);
-    const saveingPassword = ref<boolean>(false);
-    const show1 = ref<boolean>(false);
+    const passwordVisible = ref<boolean>(false);
 
     const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "" && password.value !== undefined );
 
@@ -58,20 +58,22 @@ import { computed, inject, ref, watch } from 'vue';
                 <v-card-text>
                     <span>Change password</span>
                         <v-text-field
-                            :type="show1 ? 'text' : 'password'"
-                            label="password"
-                            :append-inner-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                            @click:append-inner="show1 = !show1"
+                            :type="passwordVisible ? 'text' : 'password'"
+                            label="New Password"
+                            :append-inner-icon="passwordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+                            @click:append-inner="passwordVisible = !passwordVisible"
                             variant="underlined"
                             v-model="password"
-                        />
-                            
+                            />
+                        <PasswordStrengthMeter
+                            :password="password"
+                            />
                         <v-text-field
                             type="password"
-                            label="confirm password"
+                            label="Confirm Password"
                             variant="underlined"
                             v-model="confirmPassword"
-                        />
+                            />
                 </v-card-text>
                 <v-card-actions>
                     <v-btn @click="stopEditPassword">Cancel</v-btn>

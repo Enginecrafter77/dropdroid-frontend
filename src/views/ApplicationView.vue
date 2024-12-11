@@ -2,7 +2,8 @@
     import ApplicationComment from '@/components/ApplicationComment.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
     import router from '@/router';
-    import { Application, OrganizationMembership, OrganizationRole, type Organization, type User, type Comment, PaginationResponse } from '@/types';
+    import { Application, OrganizationMembership, OrganizationRole, type Organization, type User, type Comment, PaginationResponse, Package } from '@/types';
+import { downloadFile } from '@/utils';
     import { type AxiosInstance } from 'axios';
     import moment from 'moment';
     import { computed, inject, ref, toRef, watch, type Ref } from 'vue';
@@ -22,6 +23,7 @@
     const newCommentContent = ref<string>();
     const submittingComment = ref<boolean>(false);
     const deletingApplication = ref<boolean>(false);
+    const latestPackage = ref<Package|undefined>();
     const canEdit = computed<boolean>(() => {
         if(currentUserMembership.value === undefined)
             return false;
@@ -34,6 +36,7 @@
             return;
         const applicationResponse = await apiClient.get<Application>(`/applications/by_id/${appId}`);
         const commentsResponse = await apiClient.get<PaginationResponse<Comment>>(`/applications/by_id/${appId}/comments?count=100`);
+        const packagesResponse = await apiClient.get<PaginationResponse<Package>>(`/applications/by_id/${appId}/packages?count=100`);
 
         application.value = applicationResponse.data;
         const commentList = commentsResponse.data.data;
@@ -47,6 +50,20 @@
             return 0;
         });
         comments.value = commentList;
+
+        const packages = packagesResponse.data.data;
+        packages.sort((a, b) => {
+            if(a.version_code != b.version_code)
+                return b.version_code - a.version_code;
+            const aD = moment(a.created_at);
+            const bD = moment(b.created_at);
+            if(aD.isBefore(bD))
+                return 1;
+            if(aD.isAfter(bD))
+                return -1;
+            return 0;
+        });
+        latestPackage.value = packages.length > 0 ? packages[0] : undefined;
 
         await loadMembership(application.value, currentUser?.value);
     }
@@ -101,6 +118,13 @@
         }
     }
 
+    function downloadLatestPackage()
+    {
+        if(latestPackage.value === undefined)
+            return;
+        downloadFile(latestPackage.value.file_url, `${latestPackage.value.application?.namespace}-${latestPackage.value.version_code}-${latestPackage.value.version_name}.apk`);
+    }
+
     watch(applicationId, (value) => {
         if(value === undefined)
             return;
@@ -146,8 +170,13 @@
                 </div>
             </div>
             <div class="d-flex flex-column align-center justify-space-around ga-4">
-                <v-btn color="primary">
-                    Install
+                <span class="text-subtitle-2 text-secondary" v-if="latestPackage">Version {{ latestPackage.version_name }} ({{ latestPackage.version_code }})</span>
+                <v-btn
+                    color="primary"
+                    @click="downloadLatestPackage"
+                    v-if="latestPackage"
+                    >
+                    Download
                 </v-btn>
                 <v-btn
                     variant="text"
