@@ -2,7 +2,7 @@
     import PackageTable from '@/components/PackageTable.vue';
     import PackageTableItem from '@/components/PackageTableItem.vue';
     import ToolbarComponent from '@/components/ToolbarComponent.vue';
-    import { OrganizationMembership, OrganizationRole, Package, PaginationResponse, type UserInterface } from '@/types';
+    import { Application, OrganizationMembership, OrganizationRole, Package, PaginationResponse, type UserInterface } from '@/types';
     import { type AxiosInstance } from 'axios';
     import { inject, ref, watch } from 'vue';
 
@@ -28,8 +28,8 @@
 
         try
         {
-            const organization = packages.value[0].application?.organization;
-            const membershipResponse = await apiClient.get<PaginationResponse<OrganizationMembership>>(`/organizations/${organization?.id}/memberships?count=100`);
+            const applicationResponse = await apiClient.get<Application>(`/applications/by_id/${props.applicationId}`);
+            const membershipResponse = await apiClient.get<PaginationResponse<OrganizationMembership>>(`/organizations/${applicationResponse.data.organization?.id}/memberships?count=100`);
             const currentUserMembership = membershipResponse.data.data.filter((m) => m.user?.id == userInterface?.user.value?.id)[0];
             manageable.value = currentUserMembership.role == OrganizationRole.ADMIN;
         }
