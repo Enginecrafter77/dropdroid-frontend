@@ -23,7 +23,7 @@ import { downloadFile } from '@/utils';
     const newCommentContent = ref<string>();
     const submittingComment = ref<boolean>(false);
     const deletingApplication = ref<boolean>(false);
-    const latestPackage = ref<Package>();
+    const latestPackage = ref<Package|undefined>();
     const canEdit = computed<boolean>(() => {
         if(currentUserMembership.value === undefined)
             return false;
@@ -63,7 +63,7 @@ import { downloadFile } from '@/utils';
                 return -1;
             return 0;
         });
-        latestPackage.value = packages[0];
+        latestPackage.value = packages.length > 0 ? packages[0] : undefined;
 
         await loadMembership(application.value, currentUser?.value);
     }
@@ -170,10 +170,11 @@ import { downloadFile } from '@/utils';
                 </div>
             </div>
             <div class="d-flex flex-column align-center justify-space-around ga-4">
-                <span class="text-subtitle-2 text-secondary">Version {{ latestPackage?.version_name }} ({{ latestPackage?.version_code }})</span>
+                <span class="text-subtitle-2 text-secondary" v-if="latestPackage">Version {{ latestPackage.version_name }} ({{ latestPackage.version_code }})</span>
                 <v-btn
                     color="primary"
                     @click="downloadLatestPackage"
+                    v-if="latestPackage"
                     >
                     Download
                 </v-btn>
