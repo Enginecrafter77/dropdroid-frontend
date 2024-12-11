@@ -8,6 +8,8 @@
     import { useRouter } from 'vue-router';
     import { getFileMimeType } from '@/utils/mime';
     import DataStatusStrip from '@/components/DataStatusStrip.vue';
+import FileUploadInput from '@/components/FileUploadInput.vue';
+import { shuffleUrl } from '@/utils';
 
     const apiClient = inject<AxiosInstance>("api");
     const router = useRouter();
@@ -25,7 +27,6 @@
         icon_url: ""
     });
 
-    const organizationIconFile = ref<File>();
     const status = ref<DataStatus>(DataStatus.NOT_MODIFIED);
 
     async function loadData() {
@@ -33,17 +34,6 @@
             return;
         const response = await apiClient.get<Organization>(`/organizations/${props.organizationId}`);
         organization.value = response.data;
-    }
-
-    async function uploadIcon() {
-        if (apiClient === undefined || organizationIconFile.value === undefined)
-            return;
-        const mime = await getFileMimeType(organizationIconFile.value);
-        await apiClient.put(`/organizations/${props.organizationId}/icon`, organizationIconFile.value, {
-            headers: {
-                "Content-Type": mime
-            }
-        });
     }
 
     async function saveData() {
@@ -59,6 +49,11 @@
         {
             status.value = DataStatus.ERROR;
         }
+    }
+
+    function reloadIcon()
+    {
+        organization.value.icon_url = shuffleUrl(organization.value.icon_url);
     }
 
     function doneEditing()
@@ -87,11 +82,10 @@
                             :src="organization.icon_url"
                             />
                     </LoadingOverlay>
-                    <v-file-input
+                    <FileUploadInput
+                        :endpoint="`/organizations/${props.organizationId}/icon`"
                         label="Upload icon"
-                        v-model="organizationIconFile"
-                        type ='file'
-                        @update:model-value="uploadIcon"
+                        @upload="reloadIcon"
                         />
                 </div>
             </v-col>
@@ -100,6 +94,7 @@
                     <v-text-field
                         color="primary"
                         label="Organization Handle"
+                        messages="Handle must be unique"
                         v-model="organization.slug"
                         @change="saveData"
                         />

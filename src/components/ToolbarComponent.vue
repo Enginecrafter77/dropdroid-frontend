@@ -60,7 +60,11 @@
                             class="user-avatar flex-0-0"
                             rounded="circle"
                             v-bind="props"
-                            :src="currentUser?.avatar_url"/>
+                            :src="currentUser?.avatar_url">
+                            <template #placeholder>
+                                <v-img src="/logo.png"/>
+                            </template>
+                        </v-img>
                     </v-btn>
                 </template>
                 <v-list>

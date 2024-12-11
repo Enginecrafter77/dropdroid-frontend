@@ -13,8 +13,11 @@ import { User } from '@/types';
         <div class="d-flex flex-row justify-start align-center px-4 py-2 ga-4">
             <v-avatar>
                 <v-img
-                    :src="`${user.avatar_url}`" 
-                    />
+                    :src="user.avatar_url" >
+                    <template #placeholder>
+                        <v-img src="/logo.png"/>
+                    </template>
+                </v-img>
             </v-avatar>
             <div class="d-flex flex-column justify-center align-start ga-2 flex-1-0">
                 <div class="d-flex flex-row justify-start align-end ga-2">
