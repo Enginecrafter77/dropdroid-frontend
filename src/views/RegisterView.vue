@@ -3,6 +3,7 @@
     import type { AxiosInstance } from 'axios';
     import { computed, inject, ref } from 'vue';
     import { useRouter } from 'vue-router';
+    import PasswordStrengthMeter from '@/components/PasswordStrengthMeter.vue';
 
     const apiClient = inject<AxiosInstance>("api");
     const userInterface = inject<UserInterface>("userInterface");
@@ -45,38 +46,35 @@
                         <v-img aspect-ratio="1/1" :inline="true" class="page-icon" rounded="circle" src="/public/logo.png"/>
                         <span class="page-title">DropDroid</span>
                     </div>
-
-                    <v-text-field 
-                        color="primary" 
-                        label="Username" 
+                    <v-text-field
+                        color="primary"
+                        label="Username"
                         variant="underlined"
                         v-model="username"
                         />
                     <v-text-field
                         :type="show1 ? 'text' : 'password'"
                         label="Password"
-                        color="primary" 
+                        color="primary"
                         :append-inner-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
                         @click:append-inner="show1 = !show1"
                         variant="underlined"
                         v-model="password"
                         />
-                    <v-sheet 
-                        :height="8" 
-                        rounded 
-                        color="green"
+                    <PasswordStrengthMeter
+                        :password="password"
                         />
-                    <v-text-field 
-                        color="primary" 
-                        type="password" 
+                    <v-text-field
+                        color="primary"
+                        type="password"
                         label="Confirm password"
-                        variant="underlined" 
+                        variant="underlined"
                         v-model="confirmPassword"
                         />
-                    <v-btn 
-                        @click="register" 
-                        rounded="lg" 
-                        elevation="8" 
+                    <v-btn
+                        @click="register"
+                        rounded="lg"
+                        elevation="8"
                         color="primary"
                         :loading="loading"
                         :disabled="!passwordMatch"
