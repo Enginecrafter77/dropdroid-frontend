@@ -144,7 +144,11 @@ import { downloadFile } from '@/utils';
                     :src="application?.icon_url"
                     :inline="true"
                     cover
-                    />
+                    >
+                    <template #placeholder>
+                        <v-img src="/logo.png"/>
+                    </template>
+                </v-img>
                 <div class="d-flex flex-column align-start justify-center">
                     <div class="d-flex flex-row justify-start align-center ga-2">
                         <span class="app-title">{{ application?.name }}</span>
