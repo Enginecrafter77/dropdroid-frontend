@@ -20,7 +20,7 @@ import { computed, inject, ref, watch } from 'vue';
     const saveingPassword = ref<boolean>(false);
     const show1 = ref<boolean>(false);
 
-    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "");
+    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "" && password.value !== undefined );
 
     function stopEditPassword() {
         open.value = false;
