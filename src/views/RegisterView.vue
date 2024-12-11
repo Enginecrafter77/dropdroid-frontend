@@ -15,7 +15,7 @@
     const show1 = ref<boolean>(false);
     const loading = ref<boolean>(false);
 
-    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value);
+    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "" && password.value !== undefined);
 
     async function register() {
         if(apiClient === undefined || userInterface === undefined || username.value === undefined || password.value === undefined)

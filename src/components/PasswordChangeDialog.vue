@@ -20,7 +20,7 @@
     const loading = ref<boolean>(false);
     const passwordVisible = ref<boolean>(false);
 
-    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "");
+    const passwordMatch = computed<boolean>(() => confirmPassword.value == password.value && password.value != "" && password.value !== undefined );
 
     function stopEditPassword() {
         open.value = false;

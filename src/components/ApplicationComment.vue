@@ -79,9 +79,17 @@
             <div class="d-flex flex-column align-center justify-center ga-2">
                 <v-avatar
                     rounded="circle"
-                    :image="authorAvatar"
                     size="64"
-                    />
+                    >
+                    <v-img
+                        :src="authorAvatar"
+
+                        >
+                            <template #placeholder>
+                                <v-img src="/logo.png"/>
+                            </template>
+                    </v-img>
+                </v-avatar>
                 <span class="comment-author-name">{{ authorName }}</span>
             </div>
             <span v-if="!editing">{{ content }}</span>
